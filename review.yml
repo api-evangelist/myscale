@@ -1,0 +1,95 @@
+aid: myscale
+name: MyScale
+review:
+  question: Does MyScale expose a documented public WebSocket API?
+  answer: false
+  date: '2026-06-20'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was created. MyScale's interface is SQL executed over
+    the synchronous ClickHouse-compatible HTTP interface (request/response).
+    There is no documented WebSocket, Server-Sent Events, or other streaming /
+    event-driven transport to model, so no AsyncAPI artifact applies under the
+    current scope.
+findings:
+  summary: |
+    MyScale is a SQL vector database built on a ClickHouse fork (MyScaleDB). It
+    does not publish a documented public WebSocket API, and it is not a
+    conventional REST API either. Its primary interface is SQL submitted over
+    the ClickHouse-compatible HTTP interface, exposed per cluster on HTTPS port
+    8443. A client sends a SQL statement (in the request body or the `query`
+    parameter) and authenticates with the cluster username and password via HTTP
+    Basic auth or the X-ClickHouse-User / X-ClickHouse-Key headers. Vector
+    similarity search is expressed in SQL using a VECTOR INDEX column and the
+    distance() function ordered by distance, composable with standard SQL
+    filtering, joins, and full-text search. The official Python access path is
+    the clickhouse-connect client, which wraps this same HTTP transport; Node.js,
+    Go, and Java clients use it as well. Cluster lifecycle management
+    (create / modify / delete clusters) is documented as web-console-only in
+    MyScale Cloud; no public programmatic REST management API is documented. The
+    underlying MyScaleDB engine is open source under Apache-2.0 and can be
+    self-hosted. No realtime, bidirectional, or streaming WebSocket (ws:// or
+    wss://) endpoint is documented.
+  transports:
+    - protocol: HTTP (ClickHouse interface)
+      scheme: https
+      baseURL: https://{cluster-host}:8443
+      documented: true
+      note: Primary interface - SQL statement sent over HTTP, request/response. Default ClickHouse HTTP ports are 8123 (HTTP) and 8443 (HTTPS); MyScale Cloud exposes 8443.
+    - protocol: ClickHouse Native (TCP)
+      scheme: tcp
+      note: ClickHouse native protocol (default port 9000) is part of the underlying engine; the documented and console-surfaced cloud access path is the HTTPS interface on 8443.
+      documented: true
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented for MyScale or MyScaleDB as of the review date.
+    - protocol: SSE
+      scheme: https
+      documented: false
+      note: No Server-Sent Events streaming transport is documented.
+  interfaceType: SQL-over-HTTP (ClickHouse-compatible)
+  authentication:
+    - Basic auth (cluster username + password)
+    - X-ClickHouse-User / X-ClickHouse-Key headers
+  vectorSearch:
+    method: SQL
+    indexExample: VECTOR INDEX col TYPE HNSWFLAT('metric_type=Cosine')
+    queryExample: SELECT id, distance(content_vector, [..]) AS dist FROM tbl ORDER BY dist LIMIT k
+    metrics:
+      - Cosine
+      - L2
+      - IP
+  managementApi:
+    documented: false
+    note: Cluster create / modify / delete is performed via the MyScale Cloud web console; no public REST management API is documented.
+  openSource:
+    engine: MyScaleDB
+    license: Apache-2.0
+    repo: https://github.com/myscale/MyScaleDB
+sources:
+  - url: https://docs.myscale.com/en/overview/
+    type: Documentation
+    note: States SQL is the only language needed to interact with MyScale; built on ClickHouse.
+  - url: https://docs.myscale.com/en/cluster-management/
+    type: Documentation
+    note: Cluster management via web console; Connection Details surface MYSCALE_CLUSTER_URL, username, password. No REST management API documented.
+  - url: https://docs.myscale.com/en/python-client/
+    type: Documentation
+    note: clickhouse-connect client connects on port 8443 with host / username / password.
+  - url: https://cookbook.openai.com/examples/vector_databases/myscale/getting_started_with_myscale_and_openai
+    type: Documentation
+    note: Shows clickhouse-connect on port 8443, CREATE TABLE with VECTOR INDEX HNSWFLAT, and distance()-ordered SELECT for vector search.
+  - url: https://github.com/myscale/MyScaleDB
+    type: GitHub
+    note: MyScaleDB is an Apache-2.0 ClickHouse fork with vector and full-text search; HTTP 8123/8443, native 9000.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket or other event-driven transport exists. The interface is
+    synchronous SQL over the ClickHouse-compatible HTTP interface, captured in
+    apis.yml (four sub-APIs: SQL HTTP interface, Vector Search SQL, Python SDK,
+    Cloud / cluster management) and modeled in openapi/myscale-openapi.yml as the
+    HTTP query endpoint. No AsyncAPI artifact was created.

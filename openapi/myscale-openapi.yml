@@ -1,0 +1,205 @@
+openapi: 3.0.1
+info:
+  title: MyScale SQL (ClickHouse HTTP) Interface
+  description: >-
+    MyScale is a SQL vector database built on a ClickHouse fork (MyScaleDB). Its
+    primary programmatic interface is SQL executed over the ClickHouse-compatible
+    HTTP interface, exposed per cluster on HTTPS port 8443. A client sends a SQL
+    statement (SELECT, INSERT, CREATE TABLE, ALTER, DROP) and authenticates with
+    the cluster username and password via HTTP Basic auth or the X-ClickHouse-User
+    and X-ClickHouse-Key headers. Vector similarity search is expressed in SQL
+    using a VECTOR INDEX column and the distance() function rather than a separate
+    REST surface. This OpenAPI document models that HTTP query interface. The
+    underlying MyScaleDB engine is open source under Apache-2.0; cluster lifecycle
+    management is performed through the MyScale Cloud web console and has no
+    documented public REST management API.
+  termsOfService: https://myscale.com/terms/
+  contact:
+    name: MyScale Support
+    url: https://docs.myscale.com/en/
+  license:
+    name: Apache 2.0 (MyScaleDB engine)
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: '1.0'
+servers:
+  - url: https://{clusterHost}:8443
+    description: Per-cluster ClickHouse-compatible HTTP endpoint (HTTPS).
+    variables:
+      clusterHost:
+        default: your-cluster-host.aws.myscale.com
+        description: >-
+          Cluster host from the MyScale Cloud console Connection Details
+          (MYSCALE_CLUSTER_URL).
+paths:
+  /:
+    get:
+      operationId: ping
+      tags:
+        - Query
+      summary: Health / ping check.
+      description: >-
+        A GET to the root of the HTTP interface returns a simple "Ok." body when
+        the server is reachable, used as a liveness check.
+      responses:
+        '200':
+          description: Server is reachable.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Ok.\n"
+    post:
+      operationId: query
+      tags:
+        - Query
+      summary: Execute a SQL statement over HTTP.
+      description: >-
+        Executes an arbitrary SQL statement against the cluster. The SQL is sent
+        as the raw request body (text/plain). This single endpoint covers all DDL
+        and DML - SELECT, INSERT, CREATE TABLE (including VECTOR INDEX
+        definitions), ALTER, and DROP - exactly as the ClickHouse HTTP interface
+        behaves. Vector search is performed by issuing a SELECT that orders rows
+        by the distance() function. Results may be requested in formats such as
+        JSON, JSONEachRow, CSV, or TabSeparated via the default_format setting or
+        a FORMAT clause.
+      parameters:
+        - name: query
+          in: query
+          required: false
+          description: >-
+            SQL statement, when supplied as a query-string parameter instead of
+            the request body. Body and query parameter may be combined (e.g.
+            DDL in query, data in body for INSERT).
+          schema:
+            type: string
+        - name: database
+          in: query
+          required: false
+          description: Default database for the statement.
+          schema:
+            type: string
+            default: default
+        - name: default_format
+          in: query
+          required: false
+          description: >-
+            Output format when the SQL does not include a FORMAT clause (e.g.
+            JSON, JSONEachRow, CSV, TabSeparated).
+          schema:
+            type: string
+            example: JSON
+      requestBody:
+        required: false
+        description: Raw SQL statement.
+        content:
+          text/plain:
+            schema:
+              type: string
+            examples:
+              createVectorTable:
+                summary: Create a table with a vector index
+                value: |
+                  CREATE TABLE IF NOT EXISTS default.articles
+                  (
+                      id UInt64,
+                      title String,
+                      content_vector Array(Float32),
+                      CONSTRAINT cons_vec_len CHECK length(content_vector) = 768,
+                      VECTOR INDEX article_idx content_vector TYPE HNSWFLAT('metric_type=Cosine')
+                  )
+                  ENGINE = MergeTree ORDER BY id
+              vectorSearch:
+                summary: Vector similarity search with distance()
+                value: |
+                  SELECT id, title, distance(content_vector, [0.1, 0.2, 0.3]) AS dist
+                  FROM default.articles
+                  ORDER BY dist ASC
+                  LIMIT 10
+      responses:
+        '200':
+          description: >-
+            Statement executed successfully. The body contains the result set in
+            the requested format (empty for statements that return no rows).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResult'
+            text/plain:
+              schema:
+                type: string
+            text/tab-separated-values:
+              schema:
+                type: string
+        '400':
+          description: SQL parse or execution error.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Authentication failed (bad username or password).
+          content:
+            text/plain:
+              schema:
+                type: string
+        '403':
+          description: User not authorized for the requested operation.
+          content:
+            text/plain:
+              schema:
+                type: string
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: >-
+        Cluster username and password (from the MyScale Cloud console Connection
+        Details) supplied as HTTP Basic credentials.
+    clickhouseUserHeader:
+      type: apiKey
+      in: header
+      name: X-ClickHouse-User
+      description: Cluster username, paired with X-ClickHouse-Key.
+    clickhouseKeyHeader:
+      type: apiKey
+      in: header
+      name: X-ClickHouse-Key
+      description: Cluster password, paired with X-ClickHouse-User.
+  schemas:
+    QueryResult:
+      type: object
+      description: >-
+        Result of a SELECT returned in the ClickHouse JSON format. Shape varies
+        with the query; the common envelope includes meta, data, rows, and
+        statistics.
+      properties:
+        meta:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        rows:
+          type: integer
+        statistics:
+          type: object
+          properties:
+            elapsed:
+              type: number
+            rows_read:
+              type: integer
+            bytes_read:
+              type: integer
+security:
+  - basicAuth: []
+  - clickhouseUserHeader: []
+    clickhouseKeyHeader: []

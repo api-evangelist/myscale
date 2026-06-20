@@ -1,0 +1,80 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "MyScale SQL (ClickHouse HTTP) Interface",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Query",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Ping / health check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{{clusterHost}}:8443/"
+          },
+          "docs": "GET the root of the HTTP interface; returns 'Ok.' when the cluster is reachable."
+        },
+        {
+          "info": {
+            "name": "Create table with vector index",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{{clusterHost}}:8443/",
+            "body": {
+              "type": "text",
+              "data": "CREATE TABLE IF NOT EXISTS default.articles\n(\n    id UInt64,\n    title String,\n    content_vector Array(Float32),\n    CONSTRAINT cons_vec_len CHECK length(content_vector) = 768,\n    VECTOR INDEX article_idx content_vector TYPE HNSWFLAT('metric_type=Cosine')\n)\nENGINE = MergeTree ORDER BY id"
+            }
+          },
+          "docs": "Execute DDL over the ClickHouse HTTP interface to create a table with a VECTOR INDEX."
+        },
+        {
+          "info": {
+            "name": "Insert rows",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{{clusterHost}}:8443/?query=INSERT%20INTO%20default.articles%20FORMAT%20JSONEachRow",
+            "body": {
+              "type": "text",
+              "data": "{\"id\": 1, \"title\": \"example\", \"content_vector\": [0.1, 0.2, 0.3]}"
+            }
+          },
+          "docs": "Insert data by sending an INSERT ... FORMAT statement; the rows go in the request body."
+        },
+        {
+          "info": {
+            "name": "Vector similarity search (distance)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{{clusterHost}}:8443/?default_format=JSON",
+            "body": {
+              "type": "text",
+              "data": "SELECT id, title, distance(content_vector, [0.1, 0.2, 0.3]) AS dist\nFROM default.articles\nORDER BY dist ASC\nLIMIT 10"
+            }
+          },
+          "docs": "Run a vector similarity search in SQL using the distance() function ordered by distance."
+        }
+      ]
+    }
+  ]
+}

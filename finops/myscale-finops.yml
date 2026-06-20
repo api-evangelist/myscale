@@ -1,0 +1,93 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: MyScale
+providerId: myscale
+created: '2026-06-20'
+modified: '2026-06-20'
+reconciled: true
+tags:
+- Vector Database
+- SQL
+- ClickHouse
+- Vector Search
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of MyScale Cloud spend. MyScale bills on a pod-based model rather
+  than per-API-call: cost is driven by the number and size of provisioned pods
+  (capacity-optimized and performance), replica count for high availability, and
+  metered storage. A free Development tier carries no charge but is capacity- and
+  inactivity-limited, and the open-source MyScaleDB engine (Apache-2.0) can be
+  self-hosted with only infrastructure cost. Spend is therefore optimized by
+  right-sizing pods, controlling replicas, and using the free or self-hosted
+  paths for non-production workloads.
+notes: >-
+  Pod and storage rates vary by cloud, region, and size; verify against the
+  MyScale pricing page and Price Estimator during reconciliation.
+sources:
+- https://myscale.com/pricing/
+- https://docs.myscale.com/en/cluster-management/
+- https://github.com/myscale/MyScaleDB
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: MyScale
+serviceCategory: Databases
+billingModel:
+  pricingCategory: Usage-Based
+  billingFrequency: Monthly
+  billingCurrency: USD
+  chargeCategories:
+  - Usage
+  - Purchase
+  - Adjustment
+focusColumns:
+  ServiceName: MyScale Cloud
+  ServiceCategory: Databases
+  ProviderName: MyScale
+  PublisherName: MyScale
+  InvoiceIssuerName: MyScale
+  BillingCurrency: USD
+  ChargeCategory: Usage
+  PricingCategory: Usage-Based
+meters:
+- name: pod_hours
+  description: Provisioned pod runtime (capacity-optimized or performance), billed per pod per month / hour.
+  unit: pod-hours
+  aggregation: sum
+  dimensions:
+  - account
+  - cluster
+  - pod_type
+- name: replica_pods
+  description: Additional replica pods provisioned for high availability, billed like base pods.
+  unit: pod-hours
+  aggregation: sum
+  dimensions:
+  - account
+  - cluster
+- name: storage_gb
+  description: Persistent storage consumed by tables, vectors, and indexes, metered per GB.
+  unit: gigabytes
+  aggregation: sum
+  dimensions:
+  - account
+  - cluster
+principles:
+- name: Visibility
+  description: Track per-cluster pod count, pod size, replicas, and storage from the MyScale console; map clusters to workloads.
+- name: Allocation
+  description: Separate clusters per team / environment so pod and storage spend maps cleanly to cost centers.
+- name: Optimization
+  description: Right-size pods, prefer capacity-optimized pods for storage-heavy workloads, minimize replicas where HA is not required, use the free Development tier or self-hosted Apache-2.0 MyScaleDB for non-production, and let idle Development clusters terminate.
+- name: Accountability
+  description: Assign owners per cluster; review pod and storage spend monthly against budget.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

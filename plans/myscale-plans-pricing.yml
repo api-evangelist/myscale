@@ -1,0 +1,158 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: MyScale
+providerId: myscale
+created: '2026-06-20'
+modified: '2026-06-20'
+reconciled: true
+tags:
+- Vector Database
+- SQL
+- ClickHouse
+- Vector Search
+- Full-Text Search
+- RAG
+- Plans
+description: >-
+  MyScale Cloud uses a tiered, pod-based model. A free Development tier provides
+  a single cluster sized for storing roughly 5 million 768-dimensional vectors,
+  auto-terminated after a period of inactivity. The paid Standard tier bills by
+  provisioned pod (capacity-optimized and performance pods) plus storage, with
+  capacity-optimized pods starting around $68 per pod per month on AWS, and an
+  Enterprise tier adds dedicated deployments and negotiated terms. The
+  underlying MyScaleDB engine is open source under Apache-2.0 and can be
+  self-hosted at no license cost.
+notes: >-
+  Pod prices vary by cloud, region, pod size, and replica count; the free
+  Development tier limits and inactivity-based termination behavior change over
+  time. Verify current numbers and the full pod matrix on the MyScale pricing
+  page and the Price Estimator during reconciliation.
+sources:
+- https://myscale.com/pricing/
+- https://docs.myscale.com/en/cluster-management/
+- https://github.com/myscale/MyScaleDB
+plans:
+- id: myscale-development
+  name: Development (Free)
+  type: free
+  description: >-
+    Free single-cluster tier for evaluation and small workloads. Supports
+    storage on the order of 5 million 768-dimensional vectors. The cluster is
+    terminated after an inactivity period (with data deleted), and only one
+    development cluster is allowed.
+  entries:
+  - label: Development Cluster
+    name: dev_cluster
+    type: flat
+    metric: clusters
+    limit: 1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $0 (free)
+    userMultiplied: false
+  - label: Vector Capacity
+    name: dev_vector_capacity
+    type: flat
+    metric: vectors
+    limit: 5000000
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  elements:
+  - name: SQL over ClickHouse HTTP
+  - name: Vector Search (SQL)
+  - name: Full-Text Search
+- id: myscale-standard
+  name: Standard
+  type: usage
+  description: >-
+    Paid, usage-based tier billed per provisioned pod plus storage. Includes
+    capacity-optimized pods (cost-efficient, larger vector capacity) and
+    performance pods, with size and replica options for scaling throughput and
+    high availability.
+  entries:
+  - label: Capacity-Optimized Pod (x1, AWS)
+    name: capacity_pod_x1
+    type: usage
+    metric: pods
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: from ~$68 per pod / month (varies by cloud, region, size)
+    userMultiplied: false
+  - label: Performance Pod
+    name: performance_pod
+    type: usage
+    metric: pods
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: see MyScale pricing page (per pod size / replicas)
+    userMultiplied: false
+  - label: Storage
+    name: storage
+    type: usage
+    metric: storage
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: metered storage, see pricing page
+    userMultiplied: false
+  elements:
+  - name: SQL over ClickHouse HTTP
+  - name: Vector Search (SQL)
+  - name: Full-Text Search
+  - name: Replicas / High Availability
+- id: myscale-enterprise
+  name: Enterprise
+  type: enterprise
+  description: >-
+    Dedicated deployments, private / VPC options, higher capacity pods,
+    dedicated support, and negotiated terms. Contact MyScale sales.
+  entries:
+  - label: Enterprise Agreement
+    name: enterprise
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: year
+    geo: global
+    unit: 1
+    price: contact sales
+    userMultiplied: false
+  elements:
+  - name: Dedicated / Private Deployment
+  - name: Custom Pod Sizing
+  - name: Enterprise Support
+- id: myscale-self-hosted
+  name: Self-Hosted MyScaleDB (Open Source)
+  type: free
+  description: >-
+    The MyScaleDB engine (a ClickHouse fork with vector and full-text search) is
+    open source under Apache-2.0 and can be self-hosted with no license fee; the
+    operator bears only their own infrastructure costs.
+  entries:
+  - label: MyScaleDB License
+    name: oss_license
+    type: flat
+    metric: license
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $0 (Apache-2.0)
+    userMultiplied: false
+  elements:
+  - name: SQL over ClickHouse HTTP
+  - name: Vector Search (SQL)
+  - name: Full-Text Search
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

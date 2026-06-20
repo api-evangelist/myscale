@@ -1,0 +1,110 @@
+{
+  "info": {
+    "name": "MyScale SQL (ClickHouse HTTP) Interface",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "MyScale is a SQL vector database built on a ClickHouse fork (MyScaleDB). Its primary interface is SQL executed over the ClickHouse-compatible HTTP interface (HTTPS, port 8443). Send SQL in the request body and authenticate with the cluster username and password via HTTP Basic auth or X-ClickHouse-User / X-ClickHouse-Key headers. Vector search is expressed in SQL with the distance() function over VECTOR INDEX columns."
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      { "key": "username", "value": "{{username}}", "type": "string" },
+      { "key": "password", "value": "{{password}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "clusterHost", "value": "your-cluster-host.aws.myscale.com", "type": "string" },
+    { "key": "username", "value": "", "type": "string" },
+    { "key": "password", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Query",
+      "item": [
+        {
+          "name": "Ping / health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://{{clusterHost}}:8443/",
+              "protocol": "https",
+              "host": ["{{clusterHost}}"],
+              "port": "8443",
+              "path": [""]
+            },
+            "description": "GET the root of the HTTP interface; returns 'Ok.' when the cluster is reachable."
+          }
+        },
+        {
+          "name": "Create table with vector index",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "text/plain" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "CREATE TABLE IF NOT EXISTS default.articles\n(\n    id UInt64,\n    title String,\n    content_vector Array(Float32),\n    CONSTRAINT cons_vec_len CHECK length(content_vector) = 768,\n    VECTOR INDEX article_idx content_vector TYPE HNSWFLAT('metric_type=Cosine')\n)\nENGINE = MergeTree ORDER BY id"
+            },
+            "url": {
+              "raw": "https://{{clusterHost}}:8443/",
+              "protocol": "https",
+              "host": ["{{clusterHost}}"],
+              "port": "8443",
+              "path": [""]
+            },
+            "description": "Execute DDL over the ClickHouse HTTP interface to create a table with a VECTOR INDEX."
+          }
+        },
+        {
+          "name": "Insert rows",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "text/plain" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\": 1, \"title\": \"example\", \"content_vector\": [0.1, 0.2, 0.3]}"
+            },
+            "url": {
+              "raw": "https://{{clusterHost}}:8443/?query=INSERT INTO default.articles FORMAT JSONEachRow",
+              "protocol": "https",
+              "host": ["{{clusterHost}}"],
+              "port": "8443",
+              "path": [""],
+              "query": [
+                { "key": "query", "value": "INSERT INTO default.articles FORMAT JSONEachRow" }
+              ]
+            },
+            "description": "Insert data by sending an INSERT ... FORMAT statement; the rows go in the request body."
+          }
+        },
+        {
+          "name": "Vector similarity search (distance)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "text/plain" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "SELECT id, title, distance(content_vector, [0.1, 0.2, 0.3]) AS dist\nFROM default.articles\nORDER BY dist ASC\nLIMIT 10"
+            },
+            "url": {
+              "raw": "https://{{clusterHost}}:8443/?default_format=JSON",
+              "protocol": "https",
+              "host": ["{{clusterHost}}"],
+              "port": "8443",
+              "path": [""],
+              "query": [
+                { "key": "default_format", "value": "JSON" }
+              ]
+            },
+            "description": "Run a vector similarity search in SQL using the distance() function ordered by distance."
+          }
+        }
+      ]
+    }
+  ]
+}

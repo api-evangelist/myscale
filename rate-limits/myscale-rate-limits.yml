@@ -1,0 +1,65 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: MyScale
+providerId: myscale
+created: '2026-06-20'
+modified: '2026-06-20'
+reconciled: false
+tags:
+- Vector Database
+- SQL
+- ClickHouse
+- Vector Search
+- Rate Limiting
+- Quotas
+- Throttling
+description: >-
+  MyScale does not expose token-based per-second API rate limits like a typical
+  REST API. Because the interface is SQL executed over the ClickHouse HTTP
+  interface against a provisioned cluster, throughput is bounded by the cluster
+  pod size, replica count, and ClickHouse engine settings (concurrent queries,
+  memory, and connection limits) rather than by a published RPM/TPM quota. The
+  free Development tier additionally caps capacity (~5M 768-dim vectors, single
+  cluster) and terminates the cluster after inactivity. Specific concurrency and
+  quota values are not reconciled in this artifact.
+notes: >-
+  Verify cluster-level concurrency, memory, and connection limits in the MyScale
+  console and ClickHouse settings during reconciliation; effective throughput
+  scales with pod size and replicas, and Development-tier capacity / inactivity
+  limits change over time.
+sources:
+- https://docs.myscale.com/en/cluster-management/
+- https://myscale.com/pricing/
+- https://github.com/myscale/MyScaleDB
+responseCodes:
+  throttled: 429
+limits:
+- name: Cluster Concurrent Queries
+  scope: cluster
+  metric: queries
+  limit: see provider documentation
+  notes: Bounded by ClickHouse max_concurrent_queries and pod size; not a published per-second quota.
+- name: Cluster Throughput
+  scope: cluster
+  metric: queries
+  limit: scales with pod size / replicas
+  notes: Effective QPS depends on provisioned pod size and replica count rather than a fixed limit.
+- name: Development Tier Vector Capacity
+  scope: account
+  metric: vectors
+  limit: ~5,000,000 768-dim vectors
+  notes: Free Development tier capacity ceiling; one cluster only.
+- name: Development Tier Inactivity
+  scope: account
+  metric: idle_time
+  limit: terminated after inactivity period
+  notes: Free Development cluster is terminated (data deleted) after a documented inactivity window.
+policies:
+- name: Capacity Scaling
+  description: Raise throughput and capacity by increasing pod size, adding replicas, or upgrading from Development to Standard / Enterprise.
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter on transient errors and honor any Retry-After signal.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
