@@ -1,0 +1,31 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/myscale-openapi.yml
+summary:
+  types:
+  - apiKey
+  - http
+  api_key_in:
+  - header
+schemes:
+- name: basicAuth
+  type: http
+  scheme: basic
+  description: Cluster username and password (from the MyScale Cloud console Connection Details)
+    supplied as HTTP Basic credentials.
+  sources:
+  - openapi/myscale-openapi.yml
+- name: clickhouseUserHeader
+  type: apiKey
+  in: header
+  parameter: X-ClickHouse-User
+  description: Cluster username, paired with X-ClickHouse-Key.
+  sources:
+  - openapi/myscale-openapi.yml
+- name: clickhouseKeyHeader
+  type: apiKey
+  in: header
+  parameter: X-ClickHouse-Key
+  description: Cluster password, paired with X-ClickHouse-User.
+  sources:
+  - openapi/myscale-openapi.yml
