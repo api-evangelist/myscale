@@ -1,0 +1,13 @@
+{
+  "repo": "myscale",
+  "feeds": [
+    {
+      "source": "https://www.myscale.com/blog/rss.xml",
+      "feed_url": "https://www.myscale.com/blog/rss.xml",
+      "title": "MyScale Blog",
+      "saved": 2
+    }
+  ],
+  "fetched": "2026-07-11T11:43:46Z",
+  "post_count": 22
+}
