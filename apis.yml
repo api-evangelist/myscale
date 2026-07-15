@@ -106,6 +106,8 @@ apis:
     Details (MYSCALE_CLUSTER_URL, username, password) used by the SQL-over-HTTP
     interface above.
 common:
+- type: AgenticAccess
+  url: agentic-access/myscale-agentic-access.yml
 - type: DomainSecurity
   url: security/myscale-domain-security.yml
 - type: Authentication
