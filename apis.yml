@@ -9,7 +9,20 @@ description: MyScale is a SQL vector database built on a ClickHouse fork (MyScal
   with SQL functions like distance() against VECTOR INDEX columns. A managed MyScale
   Cloud console provisions clusters, and the underlying MyScaleDB is open source under
   Apache-2.0.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/myscale.png
 tags:
 - Vector Database
 - SQL
@@ -21,70 +34,6 @@ created: '2026-06-20'
 modified: '2026-06-20'
 specificationVersion: '0.19'
 apis:
-- aid: myscale:myscale-sql-http-interface
-  name: MyScale SQL Interface (ClickHouse HTTP)
-  tags:
-  - SQL
-  - ClickHouse
-  - HTTP
-  - Query
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://docs.myscale.com/en/python-client/
-  baseURL: https://{cluster-host}:8443
-  properties:
-  - url: https://docs.myscale.com/en/overview/
-    type: Documentation
-  - url: https://docs.myscale.com/en/cluster-management/
-    type: APIReference
-  - url: openapi/myscale-openapi.yml
-    type: OpenAPI
-  description: MyScale's primary interface is SQL executed over the ClickHouse-compatible
-    HTTP interface (HTTPS, port 8443). Clients POST a SQL statement in the request
-    body (SELECT, INSERT, CREATE TABLE, ALTER, DROP) and authenticate with the cluster
-    username and password via HTTP Basic auth or X-ClickHouse-User / X-ClickHouse-Key
-    headers. This is the same transport used by clickhouse-connect, the official
-    Python client, and by Node.js, Go, and Java clients.
-- aid: myscale:myscale-vector-search-sql
-  name: MyScale Vector Search (SQL)
-  tags:
-  - Vector Search
-  - Embeddings
-  - Similarity
-  - HNSW
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://docs.myscale.com/en/vector-search/
-  baseURL: https://{cluster-host}:8443
-  properties:
-  - url: https://docs.myscale.com/en/vector-search/
-    type: Documentation
-  - url: openapi/myscale-openapi.yml
-    type: OpenAPI
-  description: Vector similarity search is expressed in SQL, not a separate REST surface.
-    Tables declare a VECTOR INDEX over an Array(Float32) column (for example TYPE
-    HNSWFLAT with metric_type Cosine, L2, or IP), and queries rank rows with the
-    distance() function ordered by distance. Vector search composes with standard
-    SQL filtering, joins, and full-text search over the same HTTP query endpoint.
-- aid: myscale:myscale-python-sdk
-  name: MyScale Python SDK (clickhouse-connect)
-  tags:
-  - SDK
-  - Python
-  - clickhouse-connect
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://docs.myscale.com/en/python-client/
-  baseURL: https://{cluster-host}:8443
-  properties:
-  - url: https://docs.myscale.com/en/python-client/
-    type: Documentation
-  - url: https://github.com/myscale/MyScaleDB
-    type: GitHub
-  - url: openapi/myscale-openapi.yml
-    type: OpenAPI
-  description: The recommended Python access path is the clickhouse-connect client,
-    which wraps the ClickHouse HTTP interface (host, port 8443, username, password).
-    It executes the same SQL over HTTP transport for table creation, inserts, and
-    distance()-based vector queries, and is the path used by the LangChain and
-    LlamaIndex MyScale integrations.
 - aid: myscale:myscale-cloud-management
   name: MyScale Cloud / Cluster Management
   tags:
@@ -98,13 +47,32 @@ apis:
   properties:
   - url: https://docs.myscale.com/en/cluster-management/
     type: Documentation
-  description: MyScale Cloud provisions and manages clusters (create, modify name /
-    size / replicas / idle period, reset password, view status) through the web
-    console at the MyScale Cloud site. As of this catalog, cluster lifecycle
-    management is documented as console-only; no public programmatic REST
-    management API is documented. The console surfaces per-cluster Connection
-    Details (MYSCALE_CLUSTER_URL, username, password) used by the SQL-over-HTTP
-    interface above.
+  description: >-
+    MyScale Cloud provisions and manages clusters (create, modify name / size / replicas / idle period,
+    reset password, view status) through the web console at the MyScale Cloud site. As of this catalog,
+    cluster lifecycle management is documented as console-only; no public programmatic REST management
+    API is documented. The console surfaces per-cluster Connection Details (MYSCALE_CLUSTER_URL, username,
+    password) used by the SQL-over-HTTP interface above.
+- aid: myscale:myscale-query-api
+  name: MyScale Query API
+  description: The Query API from MyScale — 1 operation(s) for query.
+  humanURL: https://docs.myscale.com/en/python-client/
+  baseURL: https://{cluster-host}:8443
+  tags:
+  - Query
+  properties:
+  - type: OpenAPI
+    url: openapi/myscale-query-api-openapi.yml
+  - type: Documentation
+    url: https://docs.myscale.com/en/overview/
+  - type: APIReference
+    url: https://docs.myscale.com/en/cluster-management/
+  - type: Documentation
+    url: https://docs.myscale.com/en/vector-search/
+  - type: Documentation
+    url: https://docs.myscale.com/en/python-client/
+  - type: GitHub
+    url: https://github.com/myscale/MyScaleDB
 common:
 - type: AgenticAccess
   url: agentic-access/myscale-agentic-access.yml
