@@ -1,0 +1,14 @@
+{
+  "provider": "myscale",
+  "sources": [
+    "myscale-query-api-openapi.yml"
+  ],
+  "outputs": [
+    "myscale-query-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
