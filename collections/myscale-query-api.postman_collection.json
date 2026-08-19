@@ -1,0 +1,479 @@
+{
+  "item": [
+    {
+      "id": "d1576635-0e65-47f1-b5e0-6d5cb08b2e9e",
+      "name": "Query",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "d098e265-2240-4e4e-84e0-b3c6c4d19ce6",
+          "name": "Health / ping check.",
+          "request": {
+            "name": "Health / ping check.",
+            "description": {
+              "content": "A GET to the root of the HTTP interface returns a simple \"Ok.\" body when the server is reachable, used as a liveness check.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Cluster host from the MyScale Cloud console Connection Details (MYSCALE_CLUSTER_URL).",
+                  "type": "any",
+                  "value": "{{clusterHost}}",
+                  "key": "clusterHost"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "d44541af-369f-4dbe-bb88-7b364423f80d",
+              "name": "Server is reachable.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Cluster host from the MyScale Cloud console Connection Details (MYSCALE_CLUSTER_URL).",
+                      "type": "any",
+                      "value": "{{clusterHost}}",
+                      "key": "clusterHost"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/plain"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "Ok.\n",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "55ff51ca-95a0-4d6c-a989-9bcf7db11c84",
+          "name": "Execute a SQL statement over HTTP.",
+          "request": {
+            "name": "Execute a SQL statement over HTTP.",
+            "description": {
+              "content": "Executes an arbitrary SQL statement against the cluster. The SQL is sent as the raw request body (text/plain). This single endpoint covers all DDL and DML - SELECT, INSERT, CREATE TABLE (including VECTOR INDEX definitions), ALTER, and DROP - exactly as the ClickHouse HTTP interface behaves. Vector search is performed by issuing a SELECT that orders rows by the distance() function. Results may be requested in formats such as JSON, JSONEachRow, CSV, or TabSeparated via the default_format setting or a FORMAT clause.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "query",
+                  "value": "<string>",
+                  "description": "SQL statement, when supplied as a query-string parameter instead of the request body. Body and query parameter may be combined (e.g. DDL in query, data in body for INSERT)."
+                },
+                {
+                  "disabled": false,
+                  "key": "database",
+                  "value": "default",
+                  "description": "Default database for the statement."
+                },
+                {
+                  "disabled": false,
+                  "key": "default_format",
+                  "value": "<string>",
+                  "description": "Output format when the SQL does not include a FORMAT clause (e.g. JSON, JSONEachRow, CSV, TabSeparated)."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Cluster host from the MyScale Cloud console Connection Details (MYSCALE_CLUSTER_URL).",
+                  "type": "any",
+                  "value": "{{clusterHost}}",
+                  "key": "clusterHost"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "2180a8ff-4ed9-442d-ba9c-0a0bf771efa6",
+              "name": "Statement executed successfully. The body contains the result set in the requested format (empty for statements that return no rows).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "database",
+                      "value": "default"
+                    },
+                    {
+                      "key": "default_format",
+                      "value": "JSON"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Cluster host from the MyScale Cloud console Connection Details (MYSCALE_CLUSTER_URL).",
+                      "type": "any",
+                      "value": "{{clusterHost}}",
+                      "key": "clusterHost"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "CREATE TABLE IF NOT EXISTS default.articles\n(\n    id UInt64,\n    title String,\n    content_vector Array(Float32),\n    CONSTRAINT cons_vec_len CHECK length(content_vector) = 768,\n    VECTOR INDEX article_idx content_vector TYPE HNSWFLAT('metric_type=Cosine')\n)\nENGINE = MergeTree ORDER BY id\n"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"meta\": [\n    {\n      \"name\": \"string\",\n      \"type\": \"string\"\n    },\n    {\n      \"name\": \"string\",\n      \"type\": \"string\"\n    }\n  ],\n  \"data\": [\n    {\n      \"key_0\": true,\n      \"key_1\": 7306,\n      \"key_2\": true\n    },\n    {\n      \"key_0\": 5572,\n      \"key_1\": false,\n      \"key_2\": 6695\n    }\n  ],\n  \"rows\": 3348,\n  \"statistics\": {\n    \"elapsed\": 5675.936700070823,\n    \"rows_read\": 7868,\n    \"bytes_read\": 6045\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "55234d1e-e60a-4646-9659-4ff64f92ae4e",
+              "name": "SQL parse or execution error.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "database",
+                      "value": "default"
+                    },
+                    {
+                      "key": "default_format",
+                      "value": "JSON"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Cluster host from the MyScale Cloud console Connection Details (MYSCALE_CLUSTER_URL).",
+                      "type": "any",
+                      "value": "{{clusterHost}}",
+                      "key": "clusterHost"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/plain"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "CREATE TABLE IF NOT EXISTS default.articles\n(\n    id UInt64,\n    title String,\n    content_vector Array(Float32),\n    CONSTRAINT cons_vec_len CHECK length(content_vector) = 768,\n    VECTOR INDEX article_idx content_vector TYPE HNSWFLAT('metric_type=Cosine')\n)\nENGINE = MergeTree ORDER BY id\n"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2fb63acd-7276-4dd0-bd85-8dc9a7b040e7",
+              "name": "Authentication failed (bad username or password).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "database",
+                      "value": "default"
+                    },
+                    {
+                      "key": "default_format",
+                      "value": "JSON"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Cluster host from the MyScale Cloud console Connection Details (MYSCALE_CLUSTER_URL).",
+                      "type": "any",
+                      "value": "{{clusterHost}}",
+                      "key": "clusterHost"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/plain"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "CREATE TABLE IF NOT EXISTS default.articles\n(\n    id UInt64,\n    title String,\n    content_vector Array(Float32),\n    CONSTRAINT cons_vec_len CHECK length(content_vector) = 768,\n    VECTOR INDEX article_idx content_vector TYPE HNSWFLAT('metric_type=Cosine')\n)\nENGINE = MergeTree ORDER BY id\n"
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d72d02e5-1201-4e97-ba27-bae42507ae7b",
+              "name": "User not authorized for the requested operation.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    ""
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "database",
+                      "value": "default"
+                    },
+                    {
+                      "key": "default_format",
+                      "value": "JSON"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Cluster host from the MyScale Cloud console Connection Details (MYSCALE_CLUSTER_URL).",
+                      "type": "any",
+                      "value": "{{clusterHost}}",
+                      "key": "clusterHost"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/plain"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "CREATE TABLE IF NOT EXISTS default.articles\n(\n    id UInt64,\n    title String,\n    content_vector Array(Float32),\n    CONSTRAINT cons_vec_len CHECK length(content_vector) = 768,\n    VECTOR INDEX article_idx content_vector TYPE HNSWFLAT('metric_type=Cosine')\n)\nENGINE = MergeTree ORDER BY id\n"
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Cluster host from the MyScale Cloud console Connection Details (MYSCALE_CLUSTER_URL).",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "your-cluster-host.aws.myscale.com",
+      "key": "clusterHost"
+    },
+    {
+      "type": "string",
+      "value": "https://{{clusterHost}}:8443",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{basicAuthUsername}}"
+      },
+      {
+        "key": "password",
+        "value": "{{basicAuthPassword}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "cee14a1a-ac92-448b-a36f-4607aede98cf",
+    "name": "MyScale SQL (ClickHouse HTTP) Interface Query API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "MyScale is a SQL vector database built on a ClickHouse fork (MyScaleDB). Its primary programmatic interface is SQL executed over the ClickHouse-compatible HTTP interface, exposed per cluster on HTTPS port 8443. A client sends a SQL statement (SELECT, INSERT, CREATE TABLE, ALTER, DROP) and authenticates with the cluster username and password via HTTP Basic auth or the X-ClickHouse-User and X-ClickHouse-Key headers. Vector similarity search is expressed in SQL using a VECTOR INDEX column and the distance() function rather than a separate REST surface. This OpenAPI document models that HTTP query interface. The underlying MyScaleDB engine is open source under Apache-2.0; cluster lifecycle management is performed through the MyScale Cloud web console and has no documented public REST management API.\n\nContact Support:\n Name: MyScale Support",
+      "type": "text/plain"
+    }
+  }
+}

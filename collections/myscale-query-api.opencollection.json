@@ -1,0 +1,67 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "MyScale SQL (ClickHouse HTTP) Interface Query API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Query",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Health / ping check.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{clusterHost}:8443/"
+          },
+          "docs": "A GET to the root of the HTTP interface returns a simple \"Ok.\" body when the server is reachable, used as a liveness check."
+        },
+        {
+          "info": {
+            "name": "Execute a SQL statement over HTTP.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{clusterHost}:8443/",
+            "params": [
+              {
+                "name": "query",
+                "value": "",
+                "type": "query",
+                "description": "SQL statement, when supplied as a query-string parameter instead of the request body. Body and query parameter may be combined (e.g. DDL in query, data in body for INSERT)."
+              },
+              {
+                "name": "database",
+                "value": "",
+                "type": "query",
+                "description": "Default database for the statement."
+              },
+              {
+                "name": "default_format",
+                "value": "",
+                "type": "query",
+                "description": "Output format when the SQL does not include a FORMAT clause (e.g. JSON, JSONEachRow, CSV, TabSeparated)."
+              }
+            ]
+          },
+          "docs": "Executes an arbitrary SQL statement against the cluster. The SQL is sent as the raw request body (text/plain). This single endpoint covers all DDL and DML - SELECT, INSERT, CREATE TABLE (including VECTOR INDEX definitions), ALTER, and DROP - exactly as the ClickHouse HTTP interface behaves. Vector search is performed by issuing a SELECT that orders rows by the distance() function. Results may be requested in formats such as JSON, JSONEachRow, CSV, or TabSeparated via the default_format setting o"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
