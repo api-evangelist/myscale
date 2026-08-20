@@ -38,6 +38,11 @@ apis:
   name: MyScale Cloud / Cluster Management
   tags:
   - Cloud
+  - Cluster
+  - Management
+  - Console
+  tags_raw:
+  - Cloud
   - Clusters
   - Management
   - Console
