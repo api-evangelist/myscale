@@ -1,7 +1,7 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
   title: MyScale SQL (ClickHouse HTTP) Interface Query API
-  description: MyScale is a SQL vector database built on a ClickHouse fork (MyScaleDB). Its primary programmatic interface is SQL executed over the ClickHouse-compatible HTTP interface, exposed per cluster on HTTPS port 8443. A client sends a SQL statement (SELECT, INSERT, CREATE TABLE, ALTER, DROP) and authenticates with the cluster username and password via HTTP Basic auth or the X-ClickHouse-User and X-ClickHouse-Key headers. Vector similarity search is expressed in SQL using a VECTOR INDEX column and the distance() function rather than a separate REST surface. This OpenAPI document models that HTTP query interface. The underlying MyScaleDB engine is open source under Apache-2.0; cluster lifecycle management is performed through the MyScale Cloud web console and has no documented public REST management API.
+  description: MyScale is a SQL vector database built on a ClickHouse fork (MyScaleDB).
   termsOfService: https://myscale.com/terms/
   contact:
     name: MyScale Support
@@ -29,7 +29,7 @@ paths:
       operationId: ping
       tags:
       - Query
-      summary: Health / ping check.
+      summary: Health / ping check
       description: A GET to the root of the HTTP interface returns a simple "Ok." body when the server is reachable, used as a liveness check.
       responses:
         '200':
@@ -45,7 +45,7 @@ paths:
       operationId: query
       tags:
       - Query
-      summary: Execute a SQL statement over HTTP.
+      summary: Execute a SQL statement over HTTP
       description: Executes an arbitrary SQL statement against the cluster. The SQL is sent as the raw request body (text/plain). This single endpoint covers all DDL and DML - SELECT, INSERT, CREATE TABLE (including VECTOR INDEX definitions), ALTER, and DROP - exactly as the ClickHouse HTTP interface behaves. Vector search is performed by issuing a SELECT that orders rows by the distance() function. Results may be requested in formats such as JSON, JSONEachRow, CSV, or TabSeparated via the default_format setting or a FORMAT clause.
       parameters:
       - name: query
